@@ -1,14 +1,16 @@
 import os
 from reportlab.lib import colors, pagesizes, units
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
 )
 
 from book import Book, ContentType
 from utils import LOG
+
 
 class Writer:
     def __init__(self):
@@ -19,6 +21,8 @@ class Writer:
             self._save_translated_book_pdf(book, output_file_path)
         elif file_format.lower() == "markdown":
             self._save_translated_book_markdown(book, output_file_path)
+        elif file_format.lower() == "image":
+            self._save_translated_book_image(book, output_file_path)
         else:
             raise ValueError(f"Unsupported file format: {file_format}")
 
@@ -98,11 +102,38 @@ class Writer:
                             header = '| ' + ' | '.join(str(column) for column in table.columns) + ' |' + '\n'
                             separator = '| ' + ' | '.join(['---'] * len(table.columns)) + ' |' + '\n'
                             # body = '\n'.join(['| ' + ' | '.join(row) + ' |' for row in table.values.tolist()]) + '\n\n'
-                            body = '\n'.join(['| ' + ' | '.join(str(cell) for cell in row) + ' |' for row in table.values.tolist()]) + '\n\n'
+                            body = '\n'.join(['| ' + ' | '.join(str(cell) for cell in row) + ' |' for row in
+                                              table.values.tolist()]) + '\n\n'
                             output_file.write(header + separator + body)
 
                 # Add a page break (horizontal rule) after each page except the last one
                 if page != book.pages[-1]:
                     output_file.write('---\n\n')
 
+        LOG.info(f"翻译完成: {output_file_path}")
+
+    def _save_translated_book_image(self, book: Book, output_file_path: str = None):
+        if output_file_path is None:
+            output_file_path = book.pdf_file_path.replace('.pdf', f'_translated.png')
+
+        LOG.info(f"pdf_file_path: {book.pdf_file_path}")
+        LOG.info(f"开始翻译: {output_file_path}")
+
+        # Create a PDF document
+        doc = SimpleDocTemplate(output_file_path, pagesize=letter)
+        styles = getSampleStyleSheet()
+        story = []
+
+        # Iterate over the pages and contents
+        for page in book.pages:
+            for content in page.contents:
+                if content.status:
+                    if content.content_type == ContentType.IMAGE:
+                        # Add image to the PDF
+                        image_path = content.translation
+                        pdf_image = Image(image_path, width=units.inch, height=units.inch)
+                        story.append(pdf_image)
+
+        # Save the translated book as an image file
+        doc.build(story)
         LOG.info(f"翻译完成: {output_file_path}")
