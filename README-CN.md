@@ -33,8 +33,8 @@ OpenAI 翻译器目前还处于早期开发阶段，我正在积极地添加更�
 - [X] 对健壮的翻译操作进行超时和错误处理。
 - [X] 模块化和面向对象的设计，易于定制和扩展。
 - [x] 添加对其他语言和翻译方向的支持。
-- [ ] 实现图形用户界面 (GUI) 以便更易于使用。
-- [ ] 创建一个网络服务或 API，以便在网络应用中使用。
+- [x] 实现图形用户界面 (GUI) 以便更易于使用。
+- [x] 创建一个网络服务或 API，以便在网络应用中使用。
 - [ ] 添加对多个 PDF 文件的批处理支持。
 - [ ] 添加对保留源 PDF 的原始布局和格式的支持。
 - [ ] 通过使用自定义训练的翻译模型来提高翻译质量。
@@ -60,7 +60,7 @@ OpenAI 翻译器目前还处于早期开发阶段，我正在积极地添加更�
 
 ```yaml
 model_name: "gpt-3.5-turbo"
-input_file: "tests/test.pdf"
+input_file: "../tests/test.pdf"
 output_file_format: "markdown"
 source_language: "English"
 target_language: "Chinese"
@@ -87,7 +87,6 @@ python ai_translator/main.py --model_name "gpt-3.5-turbo" --input_file "your_inp
 ## 许可证
 
 该项目采用 GPL-3.0 许可证。有关详细信息，请查看 [LICENSE](LICENSE) 文件。
-
 
 
 
