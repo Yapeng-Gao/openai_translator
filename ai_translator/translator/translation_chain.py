@@ -1,7 +1,7 @@
 import os
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
-from langchain.llms import ChatGLM
+from libs import ChatGLM3
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -31,7 +31,7 @@ class TranslationChain:
         )
 
         if model_name == "chatglm3-6b":
-            llm = ChatGLM()
+            llm = ChatGLM3()
             MODEL_PATH = os.environ.get('MODEL_PATH', 'THUDM/chatglm3-6b')
             llm.load_model(model_name_or_path=MODEL_PATH)
         else:
