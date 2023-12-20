@@ -1,6 +1,7 @@
+import os
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
-
+from langchain.llms import ChatGLM
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -9,9 +10,10 @@ from langchain.prompts.chat import (
 
 from utils import LOG
 
+
 class TranslationChain:
     def __init__(self, model_name: str = "gpt-3.5-turbo", verbose: bool = True):
-        
+
         # 翻译任务指令始终由 System 角色承担
         template = (
             """You are a translation expert, proficient in various languages. \n
@@ -29,9 +31,12 @@ class TranslationChain:
         )
 
         # 为了翻译结果的稳定性，将 temperature 设置为 0
-        chat = ChatOpenAI(model_name=model_name, temperature=0, verbose=verbose)
-
-        self.chain = LLMChain(llm=chat, prompt=chat_prompt_template, verbose=verbose)
+        llm = ChatOpenAI(model_name=model_name, temperature=0, verbose=verbose)
+        if model_name == "chatglm3-6b":
+            llm = ChatGLM()
+            MODEL_PATH = os.environ.get('MODEL_PATH', 'THUDM/chatglm3-6b')
+            llm.load_model(model_name_or_path=MODEL_PATH)
+        self.chain = LLMChain(llm=llm, prompt=chat_prompt_template, verbose=verbose)
 
     def run(self, text: str, source_language: str, target_language: str) -> (str, bool):
         result = ""
