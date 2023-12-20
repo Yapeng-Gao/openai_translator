@@ -30,12 +30,13 @@ class TranslationChain:
             [system_message_prompt, human_message_prompt]
         )
 
-        # 为了翻译结果的稳定性，将 temperature 设置为 0
-        llm = ChatOpenAI(model_name=model_name, temperature=0, verbose=verbose)
         if model_name == "chatglm3-6b":
             llm = ChatGLM()
             MODEL_PATH = os.environ.get('MODEL_PATH', 'THUDM/chatglm3-6b')
             llm.load_model(model_name_or_path=MODEL_PATH)
+        else:
+            # 为了翻译结果的稳定性，将 temperature 设置为 0
+            llm = ChatOpenAI(model_name=model_name, temperature=0, verbose=verbose)
         self.chain = LLMChain(llm=llm, prompt=chat_prompt_template, verbose=verbose)
 
     def run(self, text: str, source_language: str, target_language: str) -> (str, bool):
